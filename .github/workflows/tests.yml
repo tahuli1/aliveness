@@ -1,0 +1,25 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Build and test (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      # Builds the C++ extension (including the Media Foundation backend) with MSVC.
+      - name: Build and install
+        run: pip install ".[test]"
+
+      # Tests use the fake backend; CI machines have no camera.
+      - name: Run tests
+        run: pytest -v
