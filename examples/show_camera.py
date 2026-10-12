@@ -8,11 +8,14 @@ OpenCV is used only to display frames; capture is done by aliveness.
 Press q or Esc to quit.
 """
 
+from __future__ import annotations
+
 import argparse
 import sys
 import time
 
 import cv2
+import numpy as np
 
 import aliveness
 
@@ -22,12 +25,12 @@ QUIT_KEYS = (ord("q"), 27)  # q, Esc
 class FpsMeter:
     """Frames per second, averaged over roughly one-second windows."""
 
-    def __init__(self):
-        self.fps = 0.0
-        self._frames = 0
-        self._start = time.perf_counter()
+    def __init__(self) -> None:
+        self.fps: float = 0.0
+        self._frames: int = 0
+        self._start: float = time.perf_counter()
 
-    def tick(self):
+    def tick(self) -> bool:
         """Count one frame. Returns True when self.fps was just updated."""
         self._frames += 1
         elapsed = time.perf_counter() - self._start
@@ -39,7 +42,7 @@ class FpsMeter:
         return True
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--index", type=int, default=0)
     p.add_argument("--width", type=int, default=640)
@@ -49,7 +52,7 @@ def parse_args():
     return p.parse_args()
 
 
-def print_cameras(backend):
+def print_cameras(backend: str) -> None:
     print("Cameras:")
     for i, info in enumerate(aliveness.list_cameras(backend=backend)):
         print(f"  [{i}] {info.name}")
@@ -58,7 +61,7 @@ def print_cameras(backend):
         print(f"      physical: {info.is_physical}  ({info.reason})")
 
 
-def open_camera(args):
+def open_camera(args: argparse.Namespace) -> aliveness.Camera | None:
     """Open the camera from the command line options, or return None on error."""
     try:
         return aliveness.Camera(args.index, width=args.width, height=args.height,
@@ -68,7 +71,7 @@ def open_camera(args):
         return None
 
 
-def draw_overlay(frame, fps, is_physical):
+def draw_overlay(frame: aliveness.Frame, fps: float, is_physical: bool) -> np.ndarray:
     """Return a BGR copy of the frame (for OpenCV) with FPS and device type drawn on it."""
     bgr = cv2.cvtColor(frame.image, cv2.COLOR_RGB2BGR)
     label = f"{fps:.1f} fps  {'PHYSICAL' if is_physical else 'VIRTUAL'}"
@@ -76,12 +79,12 @@ def draw_overlay(frame, fps, is_physical):
     return bgr
 
 
-def should_quit(window):
+def should_quit(window: str) -> bool:
     key = cv2.waitKey(1) & 0xFF
     return key in QUIT_KEYS or cv2.getWindowProperty(window, cv2.WND_PROP_VISIBLE) < 1
 
 
-def show_live(cam):
+def show_live(cam: aliveness.Camera) -> None:
     """Show frames until the user quits, printing FPS once per second."""
     info = cam.device_info()
     window = f"aliveness - {info.name}"
@@ -98,7 +101,7 @@ def show_live(cam):
     print()
 
 
-def main():
+def main() -> int:
     args = parse_args()
     print_cameras(args.backend)
 
