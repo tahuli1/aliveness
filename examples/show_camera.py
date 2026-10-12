@@ -26,6 +26,7 @@ class FpsMeter:
     """Frames per second, averaged over roughly one-second windows."""
 
     def __init__(self) -> None:
+        """Start measuring from now."""
         self.fps: float = 0.0
         self._frames: int = 0
         self._start: float = time.perf_counter()
@@ -43,6 +44,7 @@ class FpsMeter:
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command line options: camera index, resolution, FPS and backend."""
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--index", type=int, default=0)
     p.add_argument("--width", type=int, default=640)
@@ -53,6 +55,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def print_cameras(backend: str) -> None:
+    """Print every camera the backend sees, with its device check result."""
     print("Cameras:")
     for i, info in enumerate(aliveness.list_cameras(backend=backend)):
         print(f"  [{i}] {info.name}")
@@ -80,6 +83,10 @@ def draw_overlay(frame: aliveness.Frame, fps: float, is_physical: bool) -> np.nd
 
 
 def should_quit(window: str) -> bool:
+    """Return True if the user pressed q / Esc or closed the window.
+
+    Also gives OpenCV its 1 ms to process window events; imshow needs this.
+    """
     key = cv2.waitKey(1) & 0xFF
     return key in QUIT_KEYS or cv2.getWindowProperty(window, cv2.WND_PROP_VISIBLE) < 1
 
@@ -102,6 +109,7 @@ def show_live(cam: aliveness.Camera) -> None:
 
 
 def main() -> int:
+    """List cameras, open the chosen one and show it. Returns the exit code."""
     args = parse_args()
     print_cameras(args.backend)
 
