@@ -1,0 +1,9 @@
+# Known, harmless differences between _core.pyi and the compiled module,
+# used by: python -m mypy.stubtest aliveness._core --allowlist tests/stubtest_allowlist.txt
+
+# pybind11 gives every bound class its own metaclass (pybind11_type).
+aliveness\._core\.(Camera|DeviceInfo|Frame)
+
+# Frame and DeviceInfo are only created by the C++ side; calling them from
+# Python raises TypeError("No constructor defined"), so the stub omits __init__.
+aliveness\._core\.(DeviceInfo|Frame)\.__init__

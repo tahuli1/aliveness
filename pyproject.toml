@@ -1,0 +1,23 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=3.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "aliveness"
+version = "0.1.0"
+description = "Face liveness detection from a webcam: C++ core with Python bindings"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+test = ["pytest", "mypy"]
+examples = ["opencv-python"]
+
+[tool.scikit-build]
+minimum-version = "0.10"
+cmake.build-type = "Release"
+wheel.packages = ["python/aliveness"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
