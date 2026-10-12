@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+from typing import Literal
 
 import cv2
 import numpy as np
@@ -54,7 +55,7 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def print_cameras(backend: str) -> None:
+def print_cameras(backend: Literal["auto", "fake"]) -> None:
     """Print every camera the backend sees, with its device check result."""
     print("Cameras:")
     for i, info in enumerate(aliveness.list_cameras(backend=backend)):

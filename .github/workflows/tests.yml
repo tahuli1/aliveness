@@ -23,3 +23,7 @@ jobs:
       # Tests use the fake backend; CI machines have no camera.
       - name: Run tests
         run: pytest -v
+
+      # Checks python/aliveness/_core.pyi against the compiled module.
+      - name: Check type stubs
+        run: python -m mypy.stubtest aliveness._core --allowlist tests/stubtest_allowlist.txt

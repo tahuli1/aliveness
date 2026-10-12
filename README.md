@@ -20,6 +20,7 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install ".[test,examples]"     # builds the C++ extension via scikit-build-core
 pytest                             # runs without a camera (fake backend)
+python -m mypy.stubtest aliveness._core --allowlist tests/stubtest_allowlist.txt  # type stubs match the C++ module
 python examples/show_camera.py     # live view, FPS and device info (q to quit)
 ```
 
@@ -54,6 +55,7 @@ For tests or machines without a webcam, pass `backend="fake"` to `Camera` or
 
 ```
 python/aliveness/        public Python API (re-exports _core)
+python/aliveness/_core.pyi  type stubs for the C++ module (checked in CI by stubtest)
 bindings/module.cpp      pybind11: Camera, Frame (buffer protocol), DeviceInfo, errors
 include/aliveness/       public C++ headers
 src/camera.cpp           Camera: owns a backend, numbers frames, locks read/close
